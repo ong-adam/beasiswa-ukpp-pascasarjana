@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pendaftaran Beasiswa UKPP Pascasarjana - UIN Sunan Kalijaga Yogyakarta</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SheetJS (xlsx) for native Excel template generation & download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #printable-area, #printable-area * { visibility: visible; }
+      #printable-area { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Header Navigasi -->
+  <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-white text-emerald-800 flex items-center justify-center font-bold text-xl shadow">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold leading-tight">Beasiswa UKPP Pascasarjana (S2 & S3)</h1>
+          <p class="text-xs text-emerald-200">UIN Sunan Kalijaga Yogyakarta &bull; Gel. 1 Genap TA 2026/2027</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <button id="nav-btn-home" onclick="showView('home')" class="px-3 py-1.5 rounded-lg text-sm bg-emerald-700 hover:bg-emerald-600 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-house"></i> Beranda
+        </button>
+        <button id="nav-btn-admin" onclick="showView('admin-login')" class="px-3 py-1.5 rounded-lg text-sm bg-emerald-900 hover:bg-emerald-950 transition flex items-center gap-1.5 text-emerald-200">
+          <i class="fa-solid fa-user-shield"></i> Portal Admin
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Konten Utama -->
+  <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
+
+    <!-- VIEW 1: HOME / LOGIN MAHASISWA -->
+    <section id="view-home" class="space-y-6">
+      <!-- Banner Pengumuman -->
+      <div class="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white rounded-2xl p-6 sm:p-8 shadow-lg">
+        <div class="inline-block px-3 py-1 bg-emerald-600 text-emerald-100 text-xs font-semibold rounded-full mb-3 uppercase tracking-wider">
+          Pengumuman Resmi
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold mb-2 leading-snug">
+          Pengajuan Beasiswa UKPP Uang Kuliah Program Pascasarjana
+        </h2>
+        <p class="text-emerald-100 text-sm sm:text-base leading-relaxed max-w-3xl">
+          Diberitahukan kepada calon mahasiswa baru Program Magister (S2) dan Doktor (S3) UIN Sunan Kalijaga Yogyakarta yang dinyatakan <strong>LULUS seleksi pada Gelombang 1 Semester Genap Tahun Akademik 2026/2027</strong>, bahwa dibuka kesempatan untuk mengajukan permohonan Beasiswa UKPP.
+        </p>
+        <div class="mt-4 pt-4 border-t border-emerald-700/60 flex flex-wrap gap-4 text-xs text-emerald-200">
+          <div><i class="fa-regular fa-calendar-check mr-1 text-emerald-400"></i> Semester Genap 2026/2027</div>
+          <div><i class="fa-solid fa-award mr-1 text-emerald-400"></i> Khusus Lulusan Gelombang 1</div>
+          <div><i class="fa-solid fa-file-pdf mr-1 text-red-300"></i> Wajib Upload Berkas Surat Permohonan (PDF)</div>
+          <div><i class="fa-solid fa-file-excel mr-1 text-emerald-300"></i> Tersedia Template .xlsx</div>
+        </div>
+      </div>
+
+      <!-- Kotak Login & Daftar Akun Bantuan -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Formulir Login Mahasiswa -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+          <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">Login Calon Mahasiswa</h3>
+              <p class="text-xs text-slate-500">Gunakan No. Peserta PMB dan Tanggal Lahir Anda (format ddmmyyyy)</p>
+            </div>
+          </div>
+
+          <form id="student-login-form" onsubmit="handleStudentLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Nomor Peserta / No. PMB</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                  <i class="fa-solid fa-id-card"></i>
+                </span>
+                <input type="text" id="login-pmb" placeholder="Contoh: S2-2026-001" required
+                  class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 uppercase font-mono">
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Sesuai nomor pada kartu tanda peserta PMB Gelombang 1.</p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Lahir</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                  <i class="fa-regular fa-calendar"></i>
+                </span>
+                <input type="text" id="login-dob" placeholder="ddmmyyyy (Contoh: 15081998)" maxlength="8" required
+                  class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono tracking-wider">
+              </div>
+              <p class="text-xs text-slate-400 mt-1">8 digit angka tanpa spasi atau garis miring (Hari-Bulan-Tahun).</p>
+            </div>
+
+            <div id="login-alert" class="hidden p-3 rounded-lg text-xs font-medium"></div>
+
+            <button type="submit" class="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-semibold text-sm transition shadow flex items-center justify-center gap-2">
+              <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Formulir Beasiswa
+            </button>
+          </form>
+        </div>
+
+        <!-- Panel Daftar Calon Mahasiswa PMB Diterima (Contoh / Simulasi) -->
+        <div class="bg-slate-100/80 rounded-2xl border border-slate-200 p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 text-slate-800 font-bold mb-2 text-sm">
+              <i class="fa-solid fa-clipboard-check text-emerald-600"></i> Data Calon Mahasiswa Diterima
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed mb-3">
+              Berikut daftar peserta yang sudah dinyatakan lulus seleksi PMB Pascasarjana Gelombang 1. Klik salah satu untuk mencoba login langsung:
+            </p>
+
+            <div id="pmb-quick-list" class="space-y-2 max-h-72 overflow-y-auto pr-1 text-xs">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500">
+            <i class="fa-solid fa-circle-info text-emerald-600 mr-1"></i> Data di atas dapat ditambah atau diubah oleh Administrator di Portal Admin.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 2: DASHBOARD PENDAFTARAN MAHASISWA (SETELAH LOGIN) -->
+    <section id="view-student-portal" class="hidden space-y-6">
+      
+      <!-- Bar Info Pengguna & Logout -->
+      <div class="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap justify-between items-center gap-3 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <div>
+            <div class="font-bold text-slate-800 text-sm sm:text-base" id="student-name-display">-</div>
+            <div class="text-xs text-slate-500" id="student-pmb-prodi-display">-</div>
+          </div>
+        </div>
+        <button onclick="logoutStudent()" class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold transition flex items-center gap-1">
+          <i class="fa-solid fa-right-from-bracket"></i> Keluar
+        </button>
+      </div>
+
+      <!-- Status Card Jika Sudah Mengajukan -->
+      <div id="student-status-card" class="hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Form Pengajuan Beasiswa -->
+      <div id="student-form-card" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        <div class="mb-6 pb-4 border-b border-slate-100">
+          <h3 class="text-lg font-bold text-slate-800">Formulir Pengajuan Beasiswa UKPP</h3>
+          <p class="text-xs text-slate-500">Lengkapi data rancangan riset, unduh template isian (.xlsx), dan unggah berkas surat permohonan berformat PDF.</p>
+        </div>
+
+        <form id="scholarship-app-form" onsubmit="handleScholarshipSubmit(event)" class="space-y-5">
+          
+          <!-- Bagian Skema & IPK -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Skema Beasiswa</label>
+              <select id="app-category" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+                <option value="Riset dan Publikasi Jurnal">Riset dan Publikasi Jurnal (Scopus / Sinta)</option>
+                <option value="Tahfidz Al-Qur'an & Kitab Kuning">Tahfidz Al-Qur'an (30 Juz) / Kitab Kuning</option>
+                <option value="Alumni Berprestasi UIN Suka">Alumni Berprestasi UIN Sunan Kalijaga</option>
+                <option value="Afirmasi Pendidik & Daerah 3T">Afirmasi Guru / Dosen / Daerah 3T</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">IPK Jenjang Sebelumnya</label>
+              <input type="number" step="0.01" min="2.00" max="4.00" id="app-ipk" placeholder="Contoh: 3.75" required
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Rencana Judul Tesis / Disertasi</label>
+            <input type="text" id="app-proposal" placeholder="Tuliskan rancangan topik penelitian Anda" required
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ringkasan Motivasi & Urgensi Penelitian</label>
+            <textarea id="app-motivation" rows="3" placeholder="Jelaskan alasan mengapa Anda layak menerima beasiswa UKPP ini..." required
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500"></textarea>
+          </div>
+
+          <!-- SECTION: DOWNLOAD TEMPLATE XLSX & UPLOAD BERKAS PDF NYATA -->
+          <div class="pt-4 border-t border-slate-200 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                  <i class="fa-solid fa-file-arrow-up text-emerald-700"></i>
+                  Unduh Template Excel (.xlsx) & Unggah Berkas Nyata (PDF)
+                </h4>
+                <p class="text-xs text-slate-500">Gunakan template resmi berikut untuk menyusun berkas, lalu simpan/konversi ke format PDF sebelum diunggah.</p>
+              </div>
+            </div>
+
+            <!-- Download Template XLSX Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <!-- Template 1: Surat Permohonan Beasiswa UKPP -->
+              <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs">
+                    <i class="fa-solid fa-file-excel"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-slate-800">Template Surat Permohonan UKPP</div>
+                    <div class="text-[11px] text-emerald-700 font-medium">Format Microsoft Excel (.xlsx)</div>
+                  </div>
+                </div>
+                <button type="button" onclick="downloadPermohonanTemplateXLSX()" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
+                  <i class="fa-solid fa-download"></i> Unduh .xlsx
+                </button>
+              </div>
+
+              <!-- Template 2: Proposal Riset & Portofolio -->
+              <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-teal-600 text-white flex items-center justify-center text-lg shadow-xs">
+                    <i class="fa-solid fa-file-excel"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs text-slate-800">Template Outline Riset & Portofolio</div>
+                    <div class="text-[11px] text-teal-700 font-medium">Format Microsoft Excel (.xlsx)</div>
+                  </div>
+                </div>
+                <button type="button" onclick="downloadRisetTemplateXLSX()" class="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
+                  <i class="fa-solid fa-download"></i> Unduh .xlsx
+                </button>
+              </div>
+            </div>
+
+            <!-- Area Upload Berkas Nyata (PDF) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+              
+              <!-- 1. Upload Surat Permohonan Beasiswa (WAJIB PDF) -->
+              <div class="p-4 bg-slate-50 border-2 border-dashed border-emerald-300 rounded-xl space-y-2">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-800">
+                      Surat Permohonan Beasiswa UKPP <span class="text-red-500">*</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500">Wajib format <strong>PDF</strong> (Maks. 10 MB)</p>
+                  </div>
+                  <span class="px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded">Wajib PDF</span>
+                </div>
+
+                <input type="file" id="file-surat-permohonan" accept="application/pdf,.pdf" onchange="handleFileChange('suratPermohonan', this)"
+                  class="block w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+
+                <div id="preview-file-suratPermohonan" class="text-xs text-slate-600 font-mono">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+              <!-- 2. Upload Proposal Riset / Berkas Pendukung (OPSIONAL PDF) -->
+              <div class="p-4 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl space-y-2">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-800">
+                      Draft Proposal Riset / Portofolio <span class="text-slate-400 font-normal">(Pendukung)</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500">Format <strong>PDF</strong> (Maks. 15 MB)</p>
+                  </div>
+                  <span class="px-2 py-0.5 bg-slate-200 text-slate-700 text-[10px] font-semibold rounded">PDF</span>
+                </div>
+
+                <input type="file" id="file-rancangan-riset" accept="application/pdf,.pdf" onchange="handleFileChange('rancanganRiset', this)"
+                  class="block w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-white hover:file:bg-slate-800 cursor-pointer">
+
+                <div id="preview-file-rancanganRiset" class="text-xs text-slate-600 font-mono">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-xl text-xs text-emerald-800 space-y-1">
+            <div class="font-bold"><i class="fa-solid fa-file-circle-check mr-1"></i> Catatan Verifikasi Berkas:</div>
+            <ul class="list-disc pl-5 space-y-0.5 text-emerald-700">
+              <li>Pastikan surat permohonan berformat PDF dan dapat terbaca jelas.</li>
+              <li>Lampiran transkrip nilai dan kartu peserta PMB dapat digabung ke dalam file PDF permohonan.</li>
+            </ul>
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-sm shadow transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan Beasiswa UKPP
+          </button>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- VIEW 3: LOGIN ADMIN -->
+    <section id="view-admin-login" class="hidden max-w-md mx-auto">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        <div class="text-center mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-xl mx-auto mb-2">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h2 class="text-lg font-bold text-slate-800">Login Administrator</h2>
+          <p class="text-xs text-slate-500">Pengelola Beasiswa UKPP Pascasarjana</p>
+        </div>
+
+        <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Username</label>
+            <input type="text" id="admin-user" value="admin" required
+              class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-slate-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label>
+            <input type="password" id="admin-pass" value="admin123" required
+              class="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-slate-800">
+          </div>
+          <div class="p-2.5 bg-slate-100 rounded-lg text-[11px] text-slate-500">
+            Default akun utama: Username: <code>admin</code>, Password: <code>admin123</code>. Akun admin baru dapat didaftarkan di dalam panel admin.
+          </div>
+
+          <button type="submit" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-bold text-sm transition">
+            Masuk ke Panel Admin
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 4: DASHBOARD ADMIN -->
+    <section id="view-admin-dashboard" class="hidden space-y-6">
+      
+      <!-- Admin Top Bar -->
+      <div class="bg-slate-800 text-white rounded-2xl p-6 flex flex-wrap justify-between items-center gap-4 shadow">
+        <div>
+          <div class="text-xs uppercase text-slate-400 font-semibold tracking-wider flex items-center gap-2">
+            <span>Laman Administrator</span> &bull; 
+            <span id="admin-current-display" class="text-emerald-400 font-normal">Login sebagai: Admin</span>
+          </div>
+          <h2 class="text-xl font-bold">Portal Pengelola Beasiswa UKPP Pascasarjana</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="logoutAdmin()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs rounded-lg font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout Admin
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigasi Tab Admin -->
+      <div class="flex border-b border-slate-200 bg-white rounded-xl p-1.5 gap-1.5 shadow-xs overflow-x-auto">
+        <button id="admin-tab-btn-applicants" onclick="switchAdminTab('applicants')" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-emerald-700 text-white">
+          <i class="fa-solid fa-list-check"></i> Verifikasi Pengajuan Beasiswa
+        </button>
+        <button id="admin-tab-btn-pmb" onclick="switchAdminTab('pmb')" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
+          <i class="fa-solid fa-user-graduate"></i> Data Kelulusan PMB (Gel. 1)
+        </button>
+        <button id="admin-tab-btn-users" onclick="switchAdminTab('users')" class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
+          <i class="fa-solid fa-users-gear"></i> Kelola Administrator
+        </button>
+      </div>
+
+      <!-- TAB 1: VERIFIKASI PENGAJUAN BEASISWA & TARIF -->
+      <div id="admin-tab-content-applicants" class="space-y-6">
+        
+        <!-- KARTU PENGATURAN BESARAN UKPP DASAR -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">Tarif Pokok UKPP Normal (Per Semester)</h3>
+              <p class="text-xs text-slate-500">Biaya pokok sebelum diberikan potongan beasiswa</p>
+            </div>
+            <span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-semibold">Tersimpan Otomatis</span>
+          </div>
+
+          <form id="ukpp-rate-form" onsubmit="saveUkppRates(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tarif Magister (S2)</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-slate-400">Rp</span>
+                <input type="number" id="rate-s2" required step="50000" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm font-semibold">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tarif Doktor (S3)</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-slate-400">Rp</span>
+                <input type="number" id="rate-s3" required step="50000" class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm font-semibold">
+              </div>
+            </div>
+
+            <div>
+              <button type="submit" class="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-sm font-semibold transition">
+                Simpan Perubahan Tarif Pokok
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TABEL DAFTAR PENGAJUAN BEASISWA -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">Daftar Pengajuan Beasiswa Calon Mahasiswa</h3>
+              <p class="text-xs text-slate-500">Periksa dokumen PDF nyata surat permohonan dan tentukan besaran potongan beasiswa</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportApplicantsCSV()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold border border-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-file-csv text-emerald-600"></i> Download Rekap CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-y border-slate-200 text-slate-600 uppercase font-bold text-[10px] tracking-wider">
+                  <th class="p-3">No. PMB & Nama</th>
+                  <th class="p-3">Jenjang & Prodi</th>
+                  <th class="p-3">Skema Beasiswa</th>
+                  <th class="p-3">Berkas Nyata (PDF)</th>
+                  <th class="p-3">Tarif Pokok</th>
+                  <th class="p-3">Potongan Beasiswa</th>
+                  <th class="p-3">Sisa Wajib Bayar</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-center">Aksi / Setting</th>
+                </tr>
+              </thead>
+              <tbody id="admin-applicant-table" class="divide-y divide-slate-100 text-slate-700">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: DATA MAHASISWA LULUS PMB -->
+      <div id="admin-tab-content-pmb" class="hidden space-y-6">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">Kelola Calon Mahasiswa Diterima PMB (Gelombang 1)</h3>
+              <p class="text-xs text-slate-500">Hanya mahasiswa di daftar ini yang dapat login mengajukan beasiswa</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="downloadPmbTemplateXLSX()" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                <i class="fa-solid fa-file-excel"></i> Download Template PMB (.xlsx)
+              </button>
+              <button onclick="toggleAddStudentForm()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-plus"></i> Tambah Mahasiswa
+              </button>
+            </div>
+          </div>
+
+          <!-- Form Tambah Mahasiswa PMB (Collapsible) -->
+          <div id="add-student-box" class="hidden mb-6 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+            <h4 class="font-bold text-xs text-slate-700 uppercase mb-3">Input Data Calon Mahasiswa Lulus Baru</h4>
+            <form onsubmit="handleAddStudent(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Jenjang</label>
+                <select id="new-level" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs">
+                  <option value="S2">Magister (S2)</option>
+                  <option value="S3">Doktor (S3)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Jalur</label>
+                <input type="text" id="new-jalur" value="Reguler" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">No Urut</label>
+                <input type="text" id="new-no" value="1" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nomor Peserta (PMB)</label>
+                <input type="text" id="new-pmb" placeholder="S2-2026-004" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs uppercase font-mono">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Peserta</label>
+                <input type="text" id="new-name" placeholder="Nama Mahasiswa" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tanggal Lahir (ddmmyyyy)</label>
+                <input type="text" id="new-dob" placeholder="10051997" maxlength="8" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs font-mono">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Program Studi</label>
+                <input type="text" id="new-prodi" placeholder="Interdisciplinary Islamic Studies" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilihan</label>
+                <input type="text" id="new-pilihan" value="1" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Kelas</label>
+                <input type="text" id="new-kelas" value="Reguler" required class="w-full px-3 py-1.5 border border-slate-300 rounded text-xs">
+              </div>
+              <div class="sm:col-span-2 lg:col-span-3 flex items-end pt-2">
+                <button type="submit" class="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-xs font-bold transition">
+                  Simpan Mahasiswa Baru
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-y border-slate-200 text-slate-600 uppercase font-bold text-[10px]">
+                  <th class="p-2.5">No. PMB</th>
+                  <th class="p-2.5">Nama Calon Mahasiswa</th>
+                  <th class="p-2.5">Jenjang</th>
+                  <th class="p-2.5">Program Studi</th>
+                  <th class="p-2.5">Tgl Lahir (Password)</th>
+                  <th class="p-2.5 text-center">Status Beasiswa</th>
+                  <th class="p-2.5 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="admin-pmb-table" class="divide-y divide-slate-100">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 3: KELOLA AKUN ADMINISTRATOR (BARU) -->
+      <div id="admin-tab-content-users" class="hidden space-y-6">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">Manajemen Akun Administrator & Verifikator</h3>
+              <p class="text-xs text-slate-500">Kelola kredensial username dan password staf pengelola beasiswa</p>
+            </div>
+            <button onclick="toggleAddAdminForm()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5">
+              <i class="fa-solid fa-user-plus"></i> Tambah Admin Baru
+            </button>
+          </div>
+
+          <!-- Form Tambah Admin Baru (Collapsible) -->
+          <div id="add-admin-box" class="hidden mb-6 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+            <h4 class="font-bold text-xs text-slate-800 uppercase mb-3 flex items-center gap-1.5">
+              <i class="fa-solid fa-user-shield text-emerald-700"></i> Buat Kredensial Administrator Baru
+            </h4>
+            <form onsubmit="handleAddAdmin(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Lengkap</label>
+                <input type="text" id="new-admin-name" placeholder="Dr. H. Ahmad..." required class="w-full px-3 py-2 border border-slate-300 rounded text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Username Login</label>
+                <input type="text" id="new-admin-username" placeholder="verifikator2" required class="w-full px-3 py-2 border border-slate-300 rounded text-xs font-mono">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Password</label>
+                <input type="password" id="new-admin-password" placeholder="Min. 6 karakter" minlength="6" required class="w-full px-3 py-2 border border-slate-300 rounded text-xs">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Peran / Hak Akses</label>
+                <select id="new-admin-role" class="w-full px-3 py-2 border border-slate-300 rounded text-xs">
+                  <option value="Super Admin">Super Admin</option>
+                  <option value="Verifikator">Tim Verifikator Dokumen</option>
+                  <option value="Petugas Keuangan">Petugas Keuangan Pascasarjana</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2 lg:col-span-4 flex justify-end gap-2 pt-2">
+                <button type="button" onclick="toggleAddAdminForm()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded text-xs font-semibold">
+                  Batal
+                </button>
+                <button type="submit" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-xs font-bold shadow">
+                  Simpan Akun Administrator
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Tabel Akun Administrator -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-y border-slate-200 text-slate-600 uppercase font-bold text-[10px]">
+                  <th class="p-3">No</th>
+                  <th class="p-3">Username</th>
+                  <th class="p-3">Nama Lengkap</th>
+                  <th class="p-3">Peran / Level</th>
+                  <th class="p-3">Tanggal Dibuat</th>
+                  <th class="p-3 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="admin-user-table" class="divide-y divide-slate-100 text-slate-700">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL: SETTING POTONGAN BEASISWA OLEH ADMIN -->
+  <div id="modal-discount" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <h4 class="font-bold text-slate-800 text-base">Verifikasi & Setting Potongan Beasiswa</h4>
+        <button onclick="closeDiscountModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Info Ringkas Mahasiswa -->
+      <div class="text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
+        <div><strong>Nama:</strong> <span id="modal-student-name">-</span></div>
+        <div><strong>No. PMB:</strong> <span id="modal-student-pmb" class="font-mono font-bold text-emerald-800">-</span></div>
+        <div><strong>Jenjang / Tarif Dasar:</strong> <span id="modal-student-rate">-</span></div>
+      </div>
+
+      <!-- Section Berkas Nyata Mahasiswa (PDF) -->
+      <div class="p-3.5 bg-emerald-50/60 border border-emerald-200 rounded-xl space-y-2">
+        <div class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+          <i class="fa-solid fa-file-pdf text-red-600"></i> Berkas Nyata yang Diunggah:
+        </div>
+        <div id="modal-uploaded-files" class="space-y-1.5 text-xs">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <form onsubmit="handleSaveDiscount(event)" class="space-y-3">
+        <input type="hidden" id="modal-target-pmb">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status Keputusan</label>
+          <select id="modal-status" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs">
+            <option value="DITERIMA">DITERIMA BEASISWA</option>
+            <option value="PROSES REVIEW">PROSES REVIEW / VERIFIKASI</option>
+            <option value="DITOLAK">DITOLAK / TIDAK LOLOS</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tipe Potongan</label>
+          <select id="modal-discount-type" onchange="updateDiscountInputPlaceholder()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs">
+            <option value="percentage">Persentase (%)</option>
+            <option value="nominal">Nominal Rupiah (Rp)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1" id="modal-value-label">Nilai Potongan (0 - 100%)</label>
+          <input type="number" id="modal-discount-value" min="0" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold">
+          <p class="text-[11px] text-slate-400 mt-1">Misal: isi 50 untuk potongan 50%, atau 100 untuk bebas 100%.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Catatan Admin / SK</label>
+          <textarea id="modal-notes" rows="2" placeholder="Contoh: Lolos seleksi riset publikasi Gelombang 1" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"></textarea>
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button type="button" onclick="closeDiscountModal()" class="w-1/2 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-semibold">
+            Batal
+          </button>
+          <button type="submit" class="w-1/2 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow">
+            Simpan Setting
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- AREA CETAK SURAT KEPUTUSAN / KARTU BEASISWA -->
+  <div id="printable-area" class="hidden p-8 max-w-2xl mx-auto bg-white text-slate-900 border border-slate-300 mt-8 rounded-lg">
+    <!-- Kop Surat UIN Sunan Kalijaga -->
+    <div class="border-b-2 border-slate-800 pb-3 mb-4 text-center">
+      <h2 class="text-lg font-extrabold uppercase tracking-wide">KEMENTERIAN AGAMA REPUBLIK INDONESIA</h2>
+      <h3 class="text-base font-bold uppercase">UNIVERSITAS ISLAM NEGERI SUNAN KALIJAGA YOGYAKARTA</h3>
+      <h4 class="text-sm font-semibold uppercase">PASCASARJANA (PROGRAM MAGISTER DAN DOKTOR)</h4>
+      <p class="text-[11px] text-slate-600">Alamat: Jl. Marsda Adisucipto Yogyakarta 55281 | Web: uin-suka.ac.id</p>
+    </div>
+
+    <div class="text-center my-4">
+      <h3 class="text-sm font-bold uppercase underline">SURAT BUKTI KELULUSAN BEASISWA UKPP</h3>
+      <p class="text-xs text-slate-600">Tahun Akademik 2026/2027 - Seleksi Gelombang 1</p>
+    </div>
+
+    <table class="w-full text-xs my-4 leading-relaxed">
+      <tr>
+        <td class="w-40 py-1 font-semibold">Nomor PMB</td>
+        <td class="w-4">:</td>
+        <td id="print-pmb" class="font-mono font-bold"></td>
+      </tr>
+      <tr>
+        <td class="py-1 font-semibold">Nama Mahasiswa</td>
+        <td>:</td>
+        <td id="print-name" class="font-bold"></td>
+      </tr>
+      <tr>
+        <td class="py-1 font-semibold">Jenjang / Program Studi</td>
+        <td>:</td>
+        <td id="print-prodi"></td>
+      </tr>
+      <tr>
+        <td class="py-1 font-semibold">Skema Beasiswa</td>
+        <td>:</td>
+        <td id="print-scheme"></td>
+      </tr>
+      <tr>
+        <td class="py-1 font-semibold">Tarif Pokok UKPP</td>
+        <td>:</td>
+        <td id="print-base"></td>
+      </tr>
+      <tr>
+        <td class="py-1 font-semibold">Potongan Beasiswa</td>
+        <td>:</td>
+        <td id="print-discount" class="font-bold text-emerald-800"></td>
+      </tr>
+      <tr class="border-t border-slate-300 font-bold text-sm">
+        <td class="py-2">Sisa UKPP Yang Dibayar</td>
+        <td>:</td>
+        <td id="print-final" class="text-emerald-900"></td>
+      </tr>
+      <tr>
+        <td class="py-1 font-semibold">Status</td>
+        <td>:</td>
+        <td id="print-status" class="uppercase font-bold"></td>
+      </tr>
+      <tr>
+        <td class="py-1 font-semibold">Catatan</td>
+        <td>:</td>
+        <td id="print-notes" class="italic"></td>
+      </tr>
+    </table>
+
+    <div class="mt-8 pt-4 flex justify-between text-xs">
+      <div>
+        <p class="text-[10px] text-slate-400">Dicetak secara elektronik dari Portal Pascasarjana UIN Suka</p>
+      </div>
+      <div class="text-center w-52">
+        <p>Yogyakarta, <span id="print-date"></span></p>
+        <p class="font-semibold mb-12">Ketua Pengelola Beasiswa UKPP</p>
+        <p class="font-bold underline">Prof. Dr. H. Pascasarjana, M.Ag.</p>
+        <p class="text-[10px]">NIP. 197801012003121001</p>
+      </div>
+    </div>
+
+    <div class="no-print mt-6 text-center">
+      <button onclick="window.print()" class="px-4 py-2 bg-emerald-700 text-white rounded text-xs font-bold">
+        <i class="fa-solid fa-print mr-1"></i> Cetak / Simpan PDF
+      </button>
+      <button onclick="document.getElementById('printable-area').classList.add('hidden')" class="px-4 py-2 bg-slate-300 text-slate-800 rounded text-xs font-semibold ml-2">
+        Tutup
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-4 text-center text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4">
+      &copy; 2026 Pascasarjana UIN Sunan Kalijaga Yogyakarta &bull; Sistem Informasi Beasiswa UKPP
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIKA UTAMA -->
+  <script>
+    // ==========================================
+    // 1. DATA MASTER AWAL (PERSISTEN DI STORAGE)
+    // ==========================================
+    const DEFAULT_RATES = { s2: 7500000, s3: 12000000 };
+
+    // Daftar admin awal
+    const DEFAULT_ADMINS = [
+      { id: "adm-1", username: "admin", password: "admin123", name: "Administrator Utama", role: "Super Admin", createdAt: "2026-01-01" },
+      { id: "adm-2", username: "verifikator1", password: "password123", name: "Tim Verifikasi Pascasarjana", role: "Verifikator", createdAt: "2026-02-15" }
+    ];
+
+    // Daftar calon mahasiswa diterima PMB Gelombang 1
+    const DEFAULT_STUDENTS = [
+      {
+        pmb: "S2-2026-001",
+        dob: "12041998",
+        name: "Muhammad Fadhil Pratama",
+        level: "S2",
+        prodi: "Interdisciplinary Islamic Studies",
+        applied: true,
+        category: "Riset dan Publikasi Jurnal",
+        ipk: "3.85",
+        proposal: "Pengembangan Model Filantropi Digital pada Lembaga Wakaf Modern",
+        status: "DITERIMA",
+        discountType: "percentage",
+        discountValue: 50,
+        adminNotes: "Disetujui potongan 50% jalur publikasi bereputasi",
+        hasSuratPermohonan: true,
+        suratPermohonanName: "Surat_Permohonan_UKPP_Muhammad_Fadhil.pdf",
+        suratPermohonanSize: "482 KB",
+        suratPermohonanDate: "2026-02-10"
+      },
+      {
+        pmb: "S2-2026-002",
+        dob: "20091999",
+        name: "Siti Rahmawati",
+        level: "S2",
+        prodi: "Pendidikan Bahasa Arab",
+        applied: true,
+        category: "Tahfidz Al-Qur'an & Kitab Kuning",
+        ipk: "3.90",
+        proposal: "Metode Ta'lim Al-Lughah Al-Arabiyyah Berbasis Multimedia",
+        status: "DITERIMA",
+        discountType: "percentage",
+        discountValue: 100,
+        adminNotes: "Lulusan Tahfidz 30 Juz Mutqin - Bebas 100%",
+        hasSuratPermohonan: true,
+        suratPermohonanName: "Surat_Permohonan_Tahfidz_Siti_Rahmawati.pdf",
+        suratPermohonanSize: "320 KB",
+        suratPermohonanDate: "2026-02-12"
+      },
+      {
+        pmb: "S3-2026-001",
+        dob: "05021992",
+        name: "Dr. (Cand) Ahmad Fauzi, M.Ag",
+        level: "S3",
+        prodi: "Studi Islam (Kajian Al-Qur'an dan Hadis)",
+        applied: true,
+        category: "Riset dan Publikasi Jurnal",
+        ipk: "3.78",
+        proposal: "Hermeneutika Al-Qur'an Kontemporer dalam Menjawab Tantangan Bioetika",
+        status: "PROSES REVIEW",
+        discountType: "percentage",
+        discountValue: 0,
+        adminNotes: "Sedang proses verifikasi berkas publikasi Scopus",
+        hasSuratPermohonan: true,
+        suratPermohonanName: "Surat_Permohonan_Beasiswa_Ahmad_Fauzi.pdf",
+        suratPermohonanSize: "614 KB",
+        suratPermohonanDate: "2026-02-18"
+      },
+      {
+        pmb: "S3-2026-002",
+        dob: "18111990",
+        name: "Nurul Hidayah, M.Pd",
+        level: "S3",
+        prodi: "Pendidikan Agama Islam",
+        applied: false,
+        category: "",
+        ipk: "",
+        proposal: "",
+        status: "BELUM MENGAJUKAN",
+        discountType: "percentage",
+        discountValue: 0,
+        adminNotes: "",
+        hasSuratPermohonan: false
+      }
+    ];
+
+    // ==========================================
+    // 2. INDEXEDDB HELPER (PENYIMPANAN PDF ASLI)
+    // ==========================================
+    const DB_NAME = "UIN_UKPP_DOCUMENTS_DB";
+    const DB_VERSION = 1;
+    const STORE_NAME = "pdf_files";
+
+    function openPdfDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: "id" });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function savePdfFile(id, fileBlob, name, size) {
+      try {
+        const db = await openPdfDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, "readwrite");
+          const store = tx.objectStore(STORE_NAME);
+          store.put({
+            id: id,
+            blob: fileBlob,
+            name: name,
+            size: size,
+            date: new Date().toLocaleDateString('id-ID')
+          });
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => reject(tx.error);
+        });
+      } catch (err) {
+        console.warn("IndexedDB save warning:", err);
+      }
+    }
+
+    async function getPdfFile(id) {
+      try {
+        const db = await openPdfDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, "readonly");
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.get(id);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (err) {
+        console.warn("IndexedDB read warning:", err);
+        return null;
+      }
+    }
+
+    // Generator Sample PDF Valid (Standar PDF 1.4 murni)
+    function generateSamplePdfBlob(title, name, pmb) {
+      const cleanTitle = (title || "SURAT PERMOHONAN BEASISWA UKPP").replace(/[()\\]/g, "");
+      const cleanName = (name || "Mahasiswa").replace(/[()\\]/g, "");
+      const cleanPmb = (pmb || "PMB-2026").replace(/[()\\]/g, "");
+      
+      const pdfContent = `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 340 >>
+stream
+BT
+/F1 16 Tf
+50 720 Td
+(${cleanTitle}) Tj
+/F1 11 Tf
+0 -35 Td
+(KEMENTERIAN AGAMA RI - UIN SUNAN KALIJAGA YOGYAKARTA) Tj
+0 -20 Td
+(PASCASARJANA PROGRAM MAGISTER DAN DOKTOR - TA 2026/2027) Tj
+0 -30 Td
+(Nama Pemohon   : ${cleanName}) Tj
+0 -20 Td
+(Nomor Peserta  : ${cleanPmb}) Tj
+0 -20 Td
+(Status Berkas  : Berkas Surat Permohonan Beasiswa Resmi Terverifikasi) Tj
+0 -40 Td
+(Dokumen ini adalah file PDF asli permohonan beasiswa UKPP Pascasarjana.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000010 00000 n 
+0000000060 00000 n 
+0000000117 00000 n 
+0000000235 00000 n 
+0000000627 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+702
+%%EOF`;
+      return new Blob([pdfContent], { type: "application/pdf" });
+    }
+
+    // Fungsi Melihat / Download PDF yang diunggah
+    async function viewApplicantPDF(pmb, fileKey) {
+      const storageId = `${pmb}_${fileKey}`;
+      let record = await getPdfFile(storageId);
+
+      const students = getStoredStudents();
+      const st = students.find(s => s.pmb === pmb);
+
+      // Jika belum ada di IndexedDB (misal sample default), generate sampel valid
+      if (!record || !record.blob) {
+        const studentName = st ? st.name : "Calon Mahasiswa";
+        const sampleBlob = generateSamplePdfBlob("SURAT PERMOHONAN BEASISWA UKPP", studentName, pmb);
+        record = {
+          blob: sampleBlob,
+          name: st && st.suratPermohonanName ? st.suratPermohonanName : `Surat_Permohonan_${pmb}.pdf`
+        };
+      }
+
+      const fileUrl = URL.createObjectURL(record.blob);
+      const win = window.open(fileUrl, '_blank');
+      if (!win) {
+        // Fallback jika pop-up diblokir
+        const a = document.createElement('a');
+        a.href = fileUrl;
+        a.download = record.name || `Surat_Permohonan_${pmb}.pdf`;
+        a.click();
+      }
+    }
+
+    // ==========================================
+    // 3. FITUR DOWNLOAD TEMPLATE XLSX (SHEETJS)
+    // ==========================================
+    
+    // Template 1: Surat Permohonan Beasiswa UKPP (.xlsx)
+    function downloadPermohonanTemplateXLSX() {
+      if (typeof XLSX === 'undefined') {
+        alert("Library XLSX sedang dimuat, silakan tunggu beberapa saat.");
+        return;
+      }
+      const wb = XLSX.utils.book_new();
+
+      const wsData = [
+        ["FORMULIR PERMOHONAN BEASISWA UKPP PASCASARJANA (S2 & S3)"],
+        ["UIN SUNAN KALIJAGA YOGYAKARTA - GELOMBANG 1 GENAP TA 2026/2027"],
+        [""],
+        ["A. IDENTITAS CALON MAHASISWA BARU"],
+        ["1. Nomor Peserta PMB", ":", "S2-2026-001 (Isi sesuai No PMB Anda)"],
+        ["2. Nama Lengkap (Sesuai Ijazah)", ":", "Nama Lengkap Anda"],
+        ["3. Tempat & Tanggal Lahir", ":", "Yogyakarta, 15 Agustus 1998"],
+        ["4. Jenjang Pendidikan", ":", "Magister (S2) / Doktor (S3)"],
+        ["5. Program Studi Pilihan", ":", "Interdisciplinary Islamic Studies"],
+        ["6. Asal Perguruan Tinggi (S1/S2)", ":", "UIN Sunan Kalijaga Yogyakarta"],
+        ["7. IPK Jenjang Sebelumnya", ":", "3.85"],
+        ["8. Nomor WhatsApp Aktif", ":", "081234567890"],
+        ["9. Alamat Email Aktif", ":", "nama@uin-suka.ac.id"],
+        [""],
+        ["B. SKEMA & PERENCANAAN RISET"],
+        ["1. Skema Beasiswa yang Diajukan", ":", "Riset & Publikasi Jurnal / Tahfidz Al-Qur'an / Alumni / Afirmasi 3T"],
+        ["2. Rencana Topik / Judul Tesis / Disertasi", ":", "Tuliskan usulan topik/judul penelitian riset Anda"],
+        ["3. Target Luaran Publikasi", ":", "Jurnal Internasional Bereputasi (Scopus) / Sinta 2"],
+        [""],
+        ["C. SURAT PERNYATAAN KOMITMEN PENERIMA BEASISWA"],
+        ["Dengan ini saya menyatakan dengan sesungguhnya bahwa:"],
+        ["1. Seluruh data dan berkas yang saya berikan adalah benar dan sah."],
+        ["2. Bersedia mematuhi seluruh peraturan akademik Pascasarjana UIN Sunan Kalijaga."],
+        ["3. Berkomitmen menyelesaikan studi tepat waktu dan menghasilkan luaran publikasi yang ditentukan."],
+        [""],
+        ["Yogyakarta, ......................... 2026"],
+        ["Pemohon Beasiswa,"],
+        [""],
+        [""],
+        ["( .................................................. )"]
+      ];
+
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      ws['!cols'] = [{ wch: 38 }, { wch: 4 }, { wch: 65 }];
+      XLSX.utils.book_append_sheet(wb, ws, "Form_Permohonan_UKPP");
+
+      // Sheet Petunjuk
+      const guideData = [
+        ["PANDUAN PENGGUNAAN TEMPLATE & PENGUNGGAHAN BERKAS"],
+        [""],
+        ["1. Lengkapi formulir pada sheet 'Form_Permohonan_UKPP'."],
+        ["2. Simpan atau cetak/ekspor dokumen Excel ini ke format PDF."],
+        ["3. Anda juga dapat menandatangani dokumen secara digital atau tanda tangan basah."],
+        ["4. Unggah file hasil konversi berupa PDF pada kolom 'Surat Permohonan Beasiswa UKPP'."],
+        ["5. Pastikan ukuran file PDF tidak melebihi 10 MB dan teks terbaca dengan jelas."]
+      ];
+      const wsGuide = XLSX.utils.aoa_to_sheet(guideData);
+      wsGuide['!cols'] = [{ wch: 80 }];
+      XLSX.utils.book_append_sheet(wb, wsGuide, "Petunjuk_Pengisian");
+
+      XLSX.writeFile(wb, "Template_Surat_Permohonan_Beasiswa_UKPP_UIN_Suka.xlsx");
+    }
+
+    // Template 2: Rancangan Riset & Usulan Portofolio (.xlsx)
+    function downloadRisetTemplateXLSX() {
+      if (typeof XLSX === 'undefined') {
+        alert("Library XLSX sedang dimuat, silakan tunggu beberapa saat.");
+        return;
+      }
+      const wb = XLSX.utils.book_new();
+
+      const wsData = [
+        ["OUTLINE RANCANGAN RISET DAN PORTOFOLIO BEASISWA UKPP"],
+        ["PASCASARJANA UIN SUNAN KALIJAGA YOGYAKARTA"],
+        [""],
+        ["1. Judul Rencana Penelitian", ":", "Tulis judul tesis / disertasi yang diusulkan"],
+        ["2. Latar Belakang & Urgensi", ":", "Uraikan mengapa riset ini sangat penting untuk didanai beasiswa UKPP"],
+        ["3. Rumusan Masalah Riset", ":", "Tuliskan 2-3 rumusan masalah utama"],
+        ["4. Kebaruan / Novelty", ":", "Jelaskan aspek orisinalitas riset dibanding kajian terdahulu"],
+        ["5. Pendekatan & Metodologi", ":", "Metode kualitatif/kuantitatif, teknik pengumpulan dan analisis data"],
+        ["6. Target Luaran Jurnal", ":", "Target nama jurnal bereputasi (misal: Al-Jami'ah / Scopus Q1-Q2)"]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      ws['!cols'] = [{ wch: 30 }, { wch: 4 }, { wch: 65 }];
+      XLSX.utils.book_append_sheet(wb, ws, "Outline_Riset");
+
+      // Sheet Estimasi Kebutuhan Riset
+      const rabData = [
+        ["RENCANA ESTIMASI KEBUTUHAN RISET DAN PUBLIKASI (RAB)"],
+        [""],
+        ["No", "Komponen Kegiatan", "Volume", "Satuan", "Biaya Satuan (Rp)", "Total Biaya (Rp)", "Keterangan"],
+        [1, "Studi Kepustakaan & Akses Jurnal", 1, "Paket", 1500000, 1500000, "Akses database jurnal bereputasi"],
+        [2, "Pengumpulan Data Lapangan / Wawancara", 1, "Kegiatan", 2500000, 2500000, "Akomodasi & transpor informan"],
+        [3, "Proofreading Native Bahasa Asing", 1, "Naskah", 2000000, 2000000, "Proofreading artikel jurnal internasional"],
+        [4, "Publikasi Artikel Jurnal Bereputasi", 1, "Artikel", 3000000, 3000000, "Publikasi target Scopus/Sinta"]
+      ];
+      const wsRab = XLSX.utils.aoa_to_sheet(rabData);
+      wsRab['!cols'] = [{ wch: 5 }, { wch: 40 }, { wch: 10 }, { wch: 10 }, { wch: 18 }, { wch: 18 }, { wch: 30 }];
+      XLSX.utils.book_append_sheet(wb, wsRab, "Estimasi_Anggaran_Riset");
+
+      XLSX.writeFile(wb, "Template_Rancangan_Riset_dan_Portofolio_UKPP.xlsx");
+    }
+
+    // Template 3: Format Data Kelulusan Mahasiswa PMB (.xlsx) untuk Admin
+    function downloadPmbTemplateXLSX() {
+      if (typeof XLSX === 'undefined') {
+        alert("Library XLSX sedang dimuat, silakan tunggu beberapa saat.");
+        return;
+      }
+      const wb = XLSX.utils.book_new();
+      const headers = [
+        ["DATA KELULUSAN MAHASISWA PMB PASCASARJANA GELOMBANG 1"],
+        ["FORMAT MASTER PESERTA DITERIMA"],
+        [""],
+        ["No PMB", "Nama Mahasiswa", "Tanggal Lahir (ddmmyyyy)", "Jenjang (S2/S3)", "Program Studi", "Jalur", "No", "Pilihan", "Kelas"],
+        ["S2-2026-005", "Budi Santoso", "15071997", "S2", "Interdisciplinary Islamic Studies", "Reguler", "1", "1", "Reguler"],
+        ["S3-2026-003", "Dr. Siti Aminah, M.Hum", "22011989", "S3", "Studi Islam", "Reguler", "2", "1", "Reguler"]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(headers);
+      ws['!cols'] = [{ wch: 16 }, { wch: 28 }, { wch: 24 }, { wch: 16 }, { wch: 35 }, { wch: 15 }, { wch: 8 }, { wch: 10 }, { wch: 15 }];
+      XLSX.utils.book_append_sheet(wb, ws, "Template_Data_PMB");
+      XLSX.writeFile(wb, "Template_Data_PMB_Pascasarjana_UIN_Suka.xlsx");
+    }
+
+    // ==========================================
+    // 4. STORAGE HELPERS
+    // ==========================================
+    function getStoredStudents() {
+      const data = localStorage.getItem('uin_ukpp_students');
+      return data ? JSON.parse(data) : DEFAULT_STUDENTS;
+    }
+
+    function saveStoredStudents(data) {
+      localStorage.setItem('uin_ukpp_students', JSON.stringify(data));
+    }
+
+    function getStoredRates() {
+      const data = localStorage.getItem('uin_ukpp_rates');
+      return data ? JSON.parse(data) : DEFAULT_RATES;
+    }
+
+    function saveStoredRates(rates) {
+      localStorage.setItem('uin_ukpp_rates', JSON.stringify(rates));
+    }
+
+    function getStoredAdmins() {
+      const data = localStorage.getItem('uin_ukpp_admins');
+      return data ? JSON.parse(data) : DEFAULT_ADMINS;
+    }
+
+    function saveStoredAdmins(admins) {
+      localStorage.setItem('uin_ukpp_admins', JSON.stringify(admins));
+    }
+
+    function formatRupiah(amount) {
+      return "Rp " + Number(amount).toLocaleString('id-ID');
+    }
+
+    function formatFileSize(bytes) {
+      if (!bytes) return "0 B";
+      const k = 1024;
+      const sizes = ["B", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+    }
+
+    // Session State
+    let currentStudent = null;
+    let isAdmin = false;
+    let currentAdminUser = null;
+    let uploadedFileCache = {
+      suratPermohonan: null,
+      rancanganRiset: null
+    };
+
+    // Inisialisasi Aplikasi
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!localStorage.getItem('uin_ukpp_students')) {
+        saveStoredStudents(DEFAULT_STUDENTS);
+      }
+      if (!localStorage.getItem('uin_ukpp_rates')) {
+        saveStoredRates(DEFAULT_RATES);
+      }
+      if (!localStorage.getItem('uin_ukpp_admins')) {
+        saveStoredAdmins(DEFAULT_ADMINS);
+      }
+      renderQuickPmbList();
+      populateRateSettings();
+    });
+
+    // Navigasi Tampilan
+    function showView(viewName) {
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-student-portal').classList.add('hidden');
+      document.getElementById('view-admin-login').classList.add('hidden');
+      document.getElementById('view-admin-dashboard').classList.add('hidden');
+
+      if (viewName === 'home') {
+        document.getElementById('view-home').classList.remove('hidden');
+        renderQuickPmbList();
+      } else if (viewName === 'student-portal') {
+        document.getElementById('view-student-portal').classList.remove('hidden');
+        renderStudentDashboard();
+      } else if (viewName === 'admin-login') {
+        if (isAdmin) {
+          showView('admin-dashboard');
+        } else {
+          document.getElementById('view-admin-login').classList.remove('hidden');
+        }
+      } else if (viewName === 'admin-dashboard') {
+        document.getElementById('view-admin-dashboard').classList.remove('hidden');
+        renderAdminTables();
+        renderAdminUserTable();
+      }
+    }
+
+    // Quick Login List
+    function renderQuickPmbList() {
+      const students = getStoredStudents();
+      const container = document.getElementById('pmb-quick-list');
+      container.innerHTML = students.map(s => `
+        <div class="bg-white p-2.5 rounded-lg border border-slate-200 flex justify-between items-center shadow-xs">
+          <div>
+            <div class="font-semibold text-slate-800">${s.name}</div>
+            <div class="text-[11px] text-slate-500">
+              <span class="font-mono font-bold text-emerald-700">${s.pmb}</span> &bull; ${s.level} - ${s.prodi}
+            </div>
+            <div class="text-[10px] text-slate-400">Tgl Lahir: <code class="bg-slate-100 px-1 rounded">${s.dob}</code></div>
+          </div>
+          <button onclick="fillLoginForm('${s.pmb}', '${s.dob}')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded text-[11px] font-bold transition">
+            Pilih
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function fillLoginForm(pmb, dob) {
+      document.getElementById('login-pmb').value = pmb;
+      document.getElementById('login-dob').value = dob;
+      const alertBox = document.getElementById('login-alert');
+      alertBox.className = "p-3 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200";
+      alertBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Data terpilih: <strong>${pmb}</strong>. Klik tombol masuk di bawah.`;
+      alertBox.classList.remove('hidden');
+    }
+
+    // Login Mahasiswa
+    function handleStudentLogin(e) {
+      e.preventDefault();
+      const pmbInput = document.getElementById('login-pmb').value.trim().toUpperCase();
+      const dobInput = document.getElementById('login-dob').value.trim();
+      const alertBox = document.getElementById('login-alert');
+
+      const students = getStoredStudents();
+      const student = students.find(s => s.pmb.toUpperCase() === pmbInput && s.dob === dobInput);
+
+      if (!student) {
+        alertBox.className = "p-3 rounded-lg text-xs font-medium bg-red-100 text-red-800 border border-red-200";
+        alertBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Data tidak ditemukan! Pastikan No. Peserta PMB Gelombang 1 dan Tanggal Lahir (ddmmyyyy) sesuai.`;
+        alertBox.classList.remove('hidden');
+        return;
+      }
+
+      currentStudent = student;
+      uploadedFileCache = { suratPermohonan: null, rancanganRiset: null };
+      alertBox.classList.add('hidden');
+      showView('student-portal');
+    }
+
+    function logoutStudent() {
+      currentStudent = null;
+      uploadedFileCache = { suratPermohonan: null, rancanganRiset: null };
+      document.getElementById('login-pmb').value = '';
+      document.getElementById('login-dob').value = '';
+      showView('home');
+    }
+
+    // Handle Pemilihan File PDF Nyata
+    function handleFileChange(key, inputElem) {
+      const file = inputElem.files[0];
+      const previewDiv = document.getElementById(`preview-file-${key}`);
+      
+      if (!file) {
+        uploadedFileCache[key] = null;
+        previewDiv.innerHTML = "";
+        return;
+      }
+
+      // Validasi PDF
+      if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+        alert("File harus berformat PDF (.pdf)!");
+        inputElem.value = "";
+        uploadedFileCache[key] = null;
+        previewDiv.innerHTML = "";
+        return;
+      }
+
+      // Validasi Ukuran (Maks 15 MB)
+      if (file.size > 15 * 1024 * 1024) {
+        alert("Ukuran file terlalu besar! Maksimal 15 MB.");
+        inputElem.value = "";
+        uploadedFileCache[key] = null;
+        previewDiv.innerHTML = "";
+        return;
+      }
+
+      uploadedFileCache[key] = file;
+      previewDiv.innerHTML = `
+        <div class="mt-2 p-2 bg-emerald-50 border border-emerald-200 rounded text-emerald-800 flex items-center justify-between text-[11px]">
+          <span class="truncate max-w-[200px]"><i class="fa-solid fa-check mr-1 text-emerald-600"></i> ${file.name} (${formatFileSize(file.size)})</span>
+          <span class="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded font-bold">Siap Upload</span>
+        </div>
+      `;
+    }
+
+    // Render Dashboard Mahasiswa
+    function renderStudentDashboard() {
+      if (!currentStudent) return;
+
+      const rates = getStoredRates();
+      const baseRate = currentStudent.level === 'S3' ? rates.s3 : rates.s2;
+
+      document.getElementById('student-name-display').textContent = currentStudent.name;
+      document.getElementById('student-pmb-prodi-display').innerHTML = `
+        <span class="font-mono font-bold text-emerald-800">${currentStudent.pmb}</span> &bull; 
+        Program <strong>${currentStudent.level}</strong> &bull; Prodi: ${currentStudent.prodi}
+      `;
+
+      const statusCard = document.getElementById('student-status-card');
+      const formCard = document.getElementById('student-form-card');
+
+      if (currentStudent.applied) {
+        let discountNominal = 0;
+        if (currentStudent.discountType === 'percentage') {
+          discountNominal = (currentStudent.discountValue / 100) * baseRate;
+        } else {
+          discountNominal = currentStudent.discountValue;
+        }
+        if (discountNominal > baseRate) discountNominal = baseRate;
+        const finalPayable = baseRate - discountNominal;
+
+        let badgeClass = "bg-amber-100 text-amber-800 border-amber-200";
+        if (currentStudent.status === "DITERIMA") badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-200";
+        if (currentStudent.status === "DITOLAK") badgeClass = "bg-red-100 text-red-800 border-red-200";
+
+        statusCard.innerHTML = `
+          <div class="flex flex-wrap justify-between items-start gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <div class="text-xs uppercase text-slate-500 font-bold tracking-wider">Status Pengajuan Beasiswa UKPP</div>
+              <h3 class="text-xl font-extrabold text-slate-800 mt-0.5">${currentStudent.category}</h3>
+            </div>
+            <span class="px-3 py-1 text-xs font-bold rounded-full border ${badgeClass}">
+              ${currentStudent.status}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div class="text-xs text-slate-500">Tarif Pokok UKPP ${currentStudent.level}</div>
+              <div class="text-base font-bold text-slate-800 mt-1">${formatRupiah(baseRate)}</div>
+            </div>
+            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+              <div class="text-xs text-emerald-700 font-semibold">Potongan Beasiswa yang Disetujui</div>
+              <div class="text-base font-extrabold text-emerald-700 mt-1">
+                ${currentStudent.discountType === 'percentage' ? currentStudent.discountValue + '% (' + formatRupiah(discountNominal) + ')' : formatRupiah(discountNominal)}
+              </div>
+            </div>
+            <div class="bg-slate-900 text-white p-4 rounded-xl shadow">
+              <div class="text-xs text-slate-300">Sisa UKPP Wajib Dibayar</div>
+              <div class="text-base font-black text-emerald-400 mt-1">${formatRupiah(finalPayable)}</div>
+            </div>
+          </div>
+
+          <!-- Rincian Berkas Nyata PDF yang Terunggah -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 mb-6 space-y-3">
+            <div class="font-bold text-xs text-slate-700 uppercase flex items-center justify-between">
+              <span><i class="fa-solid fa-folder-closed text-amber-500 mr-1.5"></i> Berkas Nyata PDF Terunggah:</span>
+              <span class="text-[11px] text-emerald-700 font-normal"><i class="fa-solid fa-shield-check"></i> Tersimpan</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div class="bg-white p-3 rounded-lg border border-slate-200 flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-slate-800 flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-pdf text-red-600"></i> Surat Permohonan UKPP
+                  </div>
+                  <div class="text-[11px] text-slate-500">${currentStudent.suratPermohonanName || "Surat_Permohonan.pdf"} &bull; ${currentStudent.suratPermohonanSize || "PDF Terlampir"}</div>
+                </div>
+                <button onclick="viewApplicantPDF('${currentStudent.pmb}', 'suratPermohonan')" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded text-xs font-bold transition flex items-center gap-1">
+                  <i class="fa-solid fa-eye"></i> Buka PDF
+                </button>
+              </div>
+
+              <div class="bg-white p-3 rounded-lg border border-slate-200 flex items-center justify-between">
+                <div>
+                  <div class="font-semibold text-slate-800 flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-lines text-teal-600"></i> Proposal Riset & Portofolio
+                  </div>
+                  <div class="text-[11px] text-slate-500">${currentStudent.rancanganRisetName || "Rancangan_Riset.pdf"}</div>
+                </div>
+                <button onclick="viewApplicantPDF('${currentStudent.pmb}', 'rancanganRiset')" class="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 rounded text-xs font-bold transition flex items-center gap-1">
+                  <i class="fa-solid fa-eye"></i> Buka PDF
+                </button>
+              </div>
+            </div>
+
+            <div class="text-xs space-y-1 pt-2 border-t border-slate-200 text-slate-600">
+              <div><strong>Rencana Riset:</strong> "${currentStudent.proposal}"</div>
+              <div><strong>Catatan Verifikator/Admin:</strong> ${currentStudent.adminNotes || "Sedang dalam tahap verifikasi tim penyeleksi."}</div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <button onclick="printScholarshipReceipt()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+              <i class="fa-solid fa-print"></i> Cetak Bukti / SK Penetapan Beasiswa
+            </button>
+            <button onclick="enableReApply()" class="px-3 py-2 border border-slate-300 text-slate-600 hover:bg-slate-100 rounded-lg text-xs font-semibold">
+              <i class="fa-solid fa-pen-to-square"></i> Perbarui Berkas & Formulir
+            </button>
+          </div>
+        `;
+        statusCard.classList.remove('hidden');
+        formCard.classList.add('hidden');
+      } else {
+        statusCard.classList.add('hidden');
+        formCard.classList.remove('hidden');
+      }
+    }
+
+    function enableReApply() {
+      document.getElementById('student-status-card').classList.add('hidden');
+      const formCard = document.getElementById('student-form-card');
+      formCard.classList.remove('hidden');
+      document.getElementById('app-category').value = currentStudent.category || "Riset dan Publikasi Jurnal";
+      document.getElementById('app-ipk').value = currentStudent.ipk || "";
+      document.getElementById('app-proposal').value = currentStudent.proposal || "";
+      document.getElementById('app-motivation').value = currentStudent.motivation || "";
+    }
+
+    // Submit Pengajuan Beasiswa Mahasiswa
+    async function handleScholarshipSubmit(e) {
+      e.preventDefault();
+      if (!currentStudent) return;
+
+      const category = document.getElementById('app-category').value;
+      const ipk = document.getElementById('app-ipk').value;
+      const proposal = document.getElementById('app-proposal').value;
+      const motivation = document.getElementById('app-motivation').value;
+
+      // Cek apakah berkas PDF surat permohonan sudah dipilih atau sudah pernah ada
+      const suratFile = uploadedFileCache.suratPermohonan;
+      if (!suratFile && !currentStudent.hasSuratPermohonan) {
+        alert("Harap unggah Surat Permohonan Beasiswa UKPP dalam format PDF!");
+        return;
+      }
+
+      // Simpan File PDF Nyata ke IndexedDB
+      if (suratFile) {
+        await savePdfFile(`${currentStudent.pmb}_suratPermohonan`, suratFile, suratFile.name, suratFile.size);
+      }
+      if (uploadedFileCache.rancanganRiset) {
+        const risetFile = uploadedFileCache.rancanganRiset;
+        await savePdfFile(`${currentStudent.pmb}_rancanganRiset`, risetFile, risetFile.name, risetFile.size);
+      }
+
+      const students = getStoredStudents();
+      const index = students.findIndex(s => s.pmb === currentStudent.pmb);
+
+      if (index !== -1) {
+        students[index].applied = true;
+        students[index].category = category;
+        students[index].ipk = ipk;
+        students[index].proposal = proposal;
+        students[index].motivation = motivation;
+        
+        if (suratFile) {
+          students[index].hasSuratPermohonan = true;
+          students[index].suratPermohonanName = suratFile.name;
+          students[index].suratPermohonanSize = formatFileSize(suratFile.size);
+          students[index].suratPermohonanDate = new Date().toLocaleDateString('id-ID');
+        }
+
+        if (uploadedFileCache.rancanganRiset) {
+          students[index].rancanganRisetName = uploadedFileCache.rancanganRiset.name;
+        }
+
+        if (!students[index].status || students[index].status === "BELUM MENGAJUKAN") {
+          students[index].status = "PROSES REVIEW";
+        }
+        
+        saveStoredStudents(students);
+        currentStudent = students[index];
+      }
+
+      alert("Pengajuan Beasiswa UKPP dan berkas PDF berhasil diunggah! Berkas Anda segera diverifikasi oleh Tim Pascasarjana.");
+      renderStudentDashboard();
+    }
+
+    // ==========================================
+    // 5. FITUR ADMIN & MANAJEMEN AKUN ADMIN
+    // ==========================================
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('admin-user').value.trim();
+      const pass = document.getElementById('admin-pass').value.trim();
+
+      const admins = getStoredAdmins();
+      const matched = admins.find(a => a.username.toLowerCase() === user.toLowerCase() && a.password === pass);
+
+      if (matched) {
+        isAdmin = true;
+        currentAdminUser = matched;
+        document.getElementById('admin-current-display').textContent = `Login sebagai: ${matched.name} (${matched.role})`;
+        showView('admin-dashboard');
+      } else {
+        alert("Username atau Password Admin salah! Periksa kembali kredensial Anda.");
+      }
+    }
+
+    function logoutAdmin() {
+      isAdmin = false;
+      currentAdminUser = null;
+      showView('home');
+    }
+
+    // Switch Tab di Dashboard Admin
+    function switchAdminTab(tabKey) {
+      const tabs = ['applicants', 'pmb', 'users'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`admin-tab-btn-${t}`);
+        const content = document.getElementById(`admin-tab-content-${t}`);
+        if (t === tabKey) {
+          btn.className = "px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-emerald-700 text-white";
+          content.classList.remove('hidden');
+        } else {
+          btn.className = "px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100";
+          content.classList.add('hidden');
+        }
+      });
+
+      if (tabKey === 'users') {
+        renderAdminUserTable();
+      } else if (tabKey === 'applicants' || tabKey === 'pmb') {
+        renderAdminTables();
+      }
+    }
+
+    // Form Tambah Admin Baru
+    function toggleAddAdminForm() {
+      const box = document.getElementById('add-admin-box');
+      box.classList.toggle('hidden');
+    }
+
+    function handleAddAdmin(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-admin-name').value.trim();
+      const username = document.getElementById('new-admin-username').value.trim().toLowerCase();
+      const password = document.getElementById('new-admin-password').value.trim();
+      const role = document.getElementById('new-admin-role').value;
+
+      if (!name || !username || !password) {
+        alert("Harap lengkapi semua kolom!");
+        return;
+      }
+
+      const admins = getStoredAdmins();
+      if (admins.some(a => a.username.toLowerCase() === username)) {
+        alert(`Username '${username}' sudah terdaftar! Gunakan username lain.`);
+        return;
+      }
+
+      admins.push({
+        id: "adm-" + Date.now(),
+        username,
+        password,
+        name,
+        role,
+        createdAt: new Date().toLocaleDateString('id-ID')
+      });
+
+      saveStoredAdmins(admins);
+      renderAdminUserTable();
+      toggleAddAdminForm();
+      alert(`Akun administrator '${username}' berhasil ditambahkan!`);
+      
+      document.getElementById('new-admin-name').value = "";
+      document.getElementById('new-admin-username').value = "";
+      document.getElementById('new-admin-password').value = "";
+    }
+
+    function deleteAdmin(adminId) {
+      const admins = getStoredAdmins();
+      const target = admins.find(a => a.id === adminId);
+      if (!target) return;
+
+      if (currentAdminUser && currentAdminUser.username.toLowerCase() === target.username.toLowerCase()) {
+        alert("Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif digunakan login!");
+        return;
+      }
+
+      if (admins.length <= 1) {
+        alert("Minimal harus tersisa satu akun administrator pada sistem!");
+        return;
+      }
+
+      if (!confirm(`Hapus akun administrator '${target.username}' (${target.name})?`)) return;
+
+      const filtered = admins.filter(a => a.id !== adminId);
+      saveStoredAdmins(filtered);
+      renderAdminUserTable();
+      alert(`Akun administrator '${target.username}' berhasil dihapus.`);
+    }
+
+    function renderAdminUserTable() {
+      const admins = getStoredAdmins();
+      const tbody = document.getElementById('admin-user-table');
+      if (!tbody) return;
+
+      tbody.innerHTML = admins.map((a, i) => `
+        <tr class="hover:bg-slate-50">
+          <td class="p-3 font-semibold text-slate-500">${i + 1}</td>
+          <td class="p-3 font-mono font-bold text-slate-800">${a.username}</td>
+          <td class="p-3 font-semibold text-slate-800">${a.name}</td>
+          <td class="p-3">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${a.role === 'Super Admin' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-700'}">
+              ${a.role}
+            </span>
+          </td>
+          <td class="p-3 text-slate-500 font-mono text-[11px]">${a.createdAt || "-"}</td>
+          <td class="p-3 text-center">
+            <button onclick="deleteAdmin('${a.id}')" class="px-2 py-1 text-red-600 hover:bg-red-50 rounded text-xs transition" title="Hapus Akun">
+              <i class="fa-regular fa-trash-can"></i> Hapus
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Rate Settings
+    function populateRateSettings() {
+      const rates = getStoredRates();
+      document.getElementById('rate-s2').value = rates.s2;
+      document.getElementById('rate-s3').value = rates.s3;
+    }
+
+    function saveUkppRates(e) {
+      e.preventDefault();
+      const s2 = Number(document.getElementById('rate-s2').value);
+      const s3 = Number(document.getElementById('rate-s3').value);
+
+      saveStoredRates({ s2, s3 });
+      alert("Tarif pokok UKPP S2 dan S3 berhasil diperbarui!");
+      renderAdminTables();
+    }
+
+    // Render Tabel Verifikasi Pengajuan Beasiswa Admin
+    function renderAdminTables() {
+      const students = getStoredStudents();
+      const rates = getStoredRates();
+
+      const appTable = document.getElementById('admin-applicant-table');
+      const appliedStudents = students.filter(s => s.applied);
+
+      if (appliedStudents.length === 0) {
+        appTable.innerHTML = `<tr><td colspan="9" class="text-center p-6 text-slate-400">Belum ada mahasiswa yang mengajukan permohonan beasiswa.</td></tr>`;
+      } else {
+        appTable.innerHTML = appliedStudents.map(s => {
+          const baseRate = s.level === 'S3' ? rates.s3 : rates.s2;
+          let discountNominal = s.discountType === 'percentage' ? (s.discountValue / 100) * baseRate : s.discountValue;
+          if (discountNominal > baseRate) discountNominal = baseRate;
+          const finalPay = baseRate - discountNominal;
+
+          let badgeColor = "bg-amber-100 text-amber-800";
+          if (s.status === "DITERIMA") badgeColor = "bg-emerald-100 text-emerald-800";
+          if (s.status === "DITOLAK") badgeColor = "bg-red-100 text-red-800";
+
+          return `
+            <tr class="hover:bg-slate-50">
+              <td class="p-3">
+                <div class="font-bold text-slate-800">${s.name}</div>
+                <div class="font-mono text-[11px] text-slate-500">${s.pmb}</div>
+              </td>
+              <td class="p-3">
+                <span class="font-bold">${s.level}</span> - ${s.prodi}
+              </td>
+              <td class="p-3">
+                <div class="font-semibold text-slate-800">${s.category}</div>
+                <div class="text-[10px] text-slate-400 truncate max-w-xs" title="${s.proposal}">Riset: ${s.proposal}</div>
+              </td>
+              <td class="p-3">
+                <button onclick="viewApplicantPDF('${s.pmb}', 'suratPermohonan')" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded text-[11px] font-bold flex items-center gap-1.5 transition">
+                  <i class="fa-solid fa-file-pdf text-red-600"></i> Surat Permohonan (PDF)
+                </button>
+              </td>
+              <td class="p-3 font-mono">${formatRupiah(baseRate)}</td>
+              <td class="p-3 font-semibold text-emerald-700 font-mono">
+                ${s.discountType === 'percentage' ? s.discountValue + '% (' + formatRupiah(discountNominal) + ')' : formatRupiah(discountNominal)}
+              </td>
+              <td class="p-3 font-bold text-slate-900 font-mono">${formatRupiah(finalPay)}</td>
+              <td class="p-3">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeColor}">
+                  ${s.status}
+                </span>
+              </td>
+              <td class="p-3 text-center">
+                <button onclick="openDiscountModal('${s.pmb}')" class="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-[11px] font-bold transition flex items-center gap-1 mx-auto">
+                  <i class="fa-solid fa-sliders"></i> Setting Potongan
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Tabel Kelola Calon Mahasiswa Diterima PMB
+      const pmbTable = document.getElementById('admin-pmb-table');
+      pmbTable.innerHTML = students.map(s => `
+        <tr class="hover:bg-slate-50">
+          <td class="p-2.5 font-mono font-bold text-slate-800">${s.pmb}</td>
+          <td class="p-2.5 font-semibold text-slate-800">${s.name}</td>
+          <td class="p-2.5 font-bold">${s.level}</td>
+          <td class="p-2.5">${s.prodi}</td>
+          <td class="p-2.5 font-mono text-slate-500">${s.dob}</td>
+          <td class="p-2.5 text-center">
+            <span class="text-[10px] px-2 py-0.5 rounded font-bold ${s.applied ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}">
+              ${s.applied ? (s.status || 'Diajukan') : 'Belum Mengajukan'}
+            </span>
+          </td>
+          <td class="p-2.5 text-center">
+            <button onclick="deleteStudent('${s.pmb}')" class="text-red-500 hover:text-red-700 p-1" title="Hapus Mahasiswa">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Modal Setting Potongan
+    function openDiscountModal(pmb) {
+      const students = getStoredStudents();
+      const student = students.find(s => s.pmb === pmb);
+      if (!student) return;
+
+      const rates = getStoredRates();
+      const baseRate = student.level === 'S3' ? rates.s3 : rates.s2;
+
+      document.getElementById('modal-target-pmb').value = student.pmb;
+      document.getElementById('modal-student-name').textContent = student.name;
+      document.getElementById('modal-student-pmb').textContent = student.pmb;
+      document.getElementById('modal-student-rate').textContent = `${student.level} - ${formatRupiah(baseRate)}`;
+
+      // Render link berkas di modal
+      const filesContainer = document.getElementById('modal-uploaded-files');
+      filesContainer.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-white p-2 rounded border border-emerald-100">
+          <span><i class="fa-solid fa-file-pdf text-red-600 mr-1"></i> ${student.suratPermohonanName || 'Surat Permohonan Beasiswa (PDF)'}</span>
+          <button type="button" onclick="viewApplicantPDF('${student.pmb}', 'suratPermohonan')" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-[11px] font-bold">
+            <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Surat PDF
+          </button>
+        </div>
+      `;
+
+      document.getElementById('modal-status').value = student.status === 'BELUM MENGAJUKAN' ? 'PROSES REVIEW' : student.status;
+      document.getElementById('modal-discount-type').value = student.discountType || 'percentage';
+      document.getElementById('modal-discount-value').value = student.discountValue !== undefined ? student.discountValue : 50;
+      document.getElementById('modal-notes').value = student.adminNotes || '';
+
+      updateDiscountInputPlaceholder();
+      document.getElementById('modal-discount').classList.remove('hidden');
+    }
+
+    function updateDiscountInputPlaceholder() {
+      const type = document.getElementById('modal-discount-type').value;
+      const label = document.getElementById('modal-value-label');
+      if (type === 'percentage') {
+        label.textContent = "Persentase Potongan (0% - 100%)";
+      } else {
+        label.textContent = "Nominal Potongan Tunai (Rp)";
+      }
+    }
+
+    function closeDiscountModal() {
+      document.getElementById('modal-discount').classList.add('hidden');
+    }
+
+    function handleSaveDiscount(e) {
+      e.preventDefault();
+      const pmb = document.getElementById('modal-target-pmb').value;
+      const status = document.getElementById('modal-status').value;
+      const discountType = document.getElementById('modal-discount-type').value;
+      const discountValue = Number(document.getElementById('modal-discount-value').value);
+      const notes = document.getElementById('modal-notes').value;
+
+      const students = getStoredStudents();
+      const index = students.findIndex(s => s.pmb === pmb);
+
+      if (index !== -1) {
+        students[index].status = status;
+        students[index].discountType = discountType;
+        students[index].discountValue = discountValue;
+        students[index].adminNotes = notes;
+        saveStoredStudents(students);
+      }
+
+      closeDiscountModal();
+      renderAdminTables();
+      alert("Pengaturan potongan beasiswa berhasil disimpan!");
+    }
+
+    // Kelola Calon Mahasiswa PMB
+    function toggleAddStudentForm() {
+      const box = document.getElementById('add-student-box');
+      box.classList.toggle('hidden');
+    }
+
+    function handleAddStudent(e) {
+      e.preventDefault();
+      const pmb = document.getElementById('new-pmb').value.trim().toUpperCase();
+      const name = document.getElementById('new-name').value.trim();
+      const dob = document.getElementById('new-dob').value.trim();
+      const level = document.getElementById('new-level').value;
+      const prodi = document.getElementById('new-prodi').value.trim();
+      const jalur = document.getElementById('new-jalur').value.trim();
+      const no = document.getElementById('new-no').value.trim();
+      const pilihan = document.getElementById('new-pilihan').value.trim();
+      const kelas = document.getElementById('new-kelas').value.trim();
+
+      const students = getStoredStudents();
+      if (students.some(s => s.pmb.toUpperCase() === pmb)) {
+        alert("Nomor PMB sudah terdaftar!");
+        return;
+      }
+
+      students.push({
+        pmb,
+        name,
+        dob,
+        level,
+        prodi,
+        jalur,
+        no,
+        pilihan,
+        kelas,
+        applied: false,
+        category: "",
+        ipk: "",
+        proposal: "",
+        status: "BELUM MENGAJUKAN",
+        discountType: "percentage",
+        discountValue: 0,
+        adminNotes: "",
+        hasSuratPermohonan: false
+      });
+
+      saveStoredStudents(students);
+      renderAdminTables();
+      toggleAddStudentForm();
+      alert("Calon mahasiswa baru berhasil ditambahkan!");
+    }
+
+    function deleteStudent(pmb) {
+      if (!confirm(`Hapus mahasiswa dengan No. PMB ${pmb}?`)) return;
+      let students = getStoredStudents();
+      students = students.filter(s => s.pmb !== pmb);
+      saveStoredStudents(students);
+      renderAdminTables();
+    }
+
+    // Cetak SK Penetapan Beasiswa
+    function printScholarshipReceipt() {
+      if (!currentStudent) return;
+      const rates = getStoredRates();
+      const baseRate = currentStudent.level === 'S3' ? rates.s3 : rates.s2;
+
+      let discountNominal = currentStudent.discountType === 'percentage' 
+        ? (currentStudent.discountValue / 100) * baseRate 
+        : currentStudent.discountValue;
+      if (discountNominal > baseRate) discountNominal = baseRate;
+      const finalPay = baseRate - discountNominal;
+
+      document.getElementById('print-pmb').textContent = currentStudent.pmb;
+      document.getElementById('print-name').textContent = currentStudent.name;
+      document.getElementById('print-prodi').textContent = `${currentStudent.level} - ${currentStudent.prodi}`;
+      document.getElementById('print-scheme').textContent = currentStudent.category;
+      document.getElementById('print-base').textContent = formatRupiah(baseRate);
+      document.getElementById('print-discount').textContent = currentStudent.discountType === 'percentage' 
+        ? `${currentStudent.discountValue}% (${formatRupiah(discountNominal)})`
+        : formatRupiah(discountNominal);
+      document.getElementById('print-final').textContent = formatRupiah(finalPay);
+      document.getElementById('print-status').textContent = currentStudent.status;
+      document.getElementById('print-notes').textContent = currentStudent.adminNotes || "Telah diverifikasi sesuai SK Rektor UIN Sunan Kalijaga.";
+      document.getElementById('print-date').textContent = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      const area = document.getElementById('printable-area');
+      area.classList.remove('hidden');
+      area.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Export Rekap CSV
+    function exportApplicantsCSV() {
+      const students = getStoredStudents().filter(s => s.applied);
+      const rates = getStoredRates();
+
+      let csv = "No,No PMB,Nama Mahasiswa,Jenjang,Program Studi,Skema Beasiswa,Berkas PDF,Tarif Pokok,Potongan,Sisa Bayar,Status,Catatan\n";
+      students.forEach((s, i) => {
+        const baseRate = s.level === 'S3' ? rates.s3 : rates.s2;
+        let discountNominal = s.discountType === 'percentage' ? (s.discountValue / 100) * baseRate : s.discountValue;
+        if (discountNominal > baseRate) discountNominal = baseRate;
+        const finalPay = baseRate - discountNominal;
+
+        const potText = s.discountType === 'percentage' ? `${s.discountValue}%` : `Rp ${s.discountValue}`;
+        const berkas = s.hasSuratPermohonan ? s.suratPermohonanName || 'Terlampir' : 'Belum Upload';
+        csv += `"${i+1}","${s.pmb}","${s.name}","${s.level}","${s.prodi}","${s.category}","${berkas}","${baseRate}","${potText}","${finalPay}","${s.status}","${(s.adminNotes||'').replace(/"/g, '""')}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Rekap_Beasiswa_UKPP_UIN_Suka_2026.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
